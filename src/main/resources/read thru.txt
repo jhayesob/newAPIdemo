@@ -1,0 +1,2 @@
+made application. Now docker file. Need to get version of java exactly for
+docker file.

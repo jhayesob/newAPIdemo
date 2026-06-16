@@ -1,0 +1,14 @@
+# copy and pasting in a docker file as demonstration
+FROM eclipse-temurin:25-jre-jammy
+
+# Create our working directory inside the container
+WORKDIR /app
+
+# Copy the compiled jar file from your laptop into the container
+COPY target/*.jar app.jar
+
+# Open the port Spring Boot needs
+EXPOSE 8080
+
+# Start the application
+ENTRYPOINT ["java", "-jar", "app.jar"]
