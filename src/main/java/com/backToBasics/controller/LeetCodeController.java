@@ -1,17 +1,32 @@
 package com.backToBasics.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+record DemoPostRequest(
+        String RN,
+        String contentBody
+) {}
+
 @RestController
-@RequestMapping("/api/v1/leetcode")
+@RequestMapping("/api/v1/evoDemo")
 public class LeetCodeController {
 
+    private static final Logger log =
+            LoggerFactory.getLogger(LeetCodeController.class);
+
+    private final RestTemplate restTemplate;
+
+    public LeetCodeController(RestTemplate restTemplate){
+        this.restTemplate = restTemplate;
+    }
     public class ListNode {
         int val;
         ListNode next;
@@ -19,6 +34,20 @@ public class LeetCodeController {
         ListNode(int val) { this.val = val; }
         ListNode(int val, ListNode next) { this.val = val; this.next = next; }
  }
+
+    @PostMapping("/demoRestEndpoint")
+    public String postDemoRestEnpoint(@RequestBody DemoPostRequest request){
+        log.info("Received POST /api/v1/evoDemo with RN={} and " +
+                "contentBody={}", request.RN(), request.contentBody());
+
+        ResponseEntity<String> response = restTemplate.getForEntity(
+                "https://www.evolutionfunding.com/public/", String.class
+        );
+        log.info("External GET Request made to https://www.evolutionfunding" +
+                ".com | StatusCode={} | ContentType of response={}",
+                response.getStatusCode(), response.getHeaders().getContentType());
+        return "thats it. demo over.";
+    }
 
     @GetMapping("/one")
     public int[] getSolutionOne(){
@@ -88,22 +117,5 @@ public class LeetCodeController {
         return maxLength;
     }
 
-    public int initialSolutionThree(){
-        String s = "abcabcbb";
-        int[] indexes = new int[]{0, 0};
-        Set<Character> currentChars = new HashSet<>();
-        for (int i = 0; i < s.length(); i++) {
-            if (!currentChars.contains(s.charAt(i))){
-                currentChars.add(s.charAt(i));
-                if (indexes[1] - indexes[0] < i - indexes[0]) {
-                    indexes[1] = i - indexes[0] > indexes[1] - indexes[0] ?
-                            indexes[1] = i : indexes[1];
-                }
-            } else {
-                currentChars.clear();
-            }
-        }
-        return 0; // placeholder return statement for the mo
 
-    }
 }
